@@ -78,17 +78,6 @@ void loop() {
   if (currentTime - prevTime >= interval) {
     prevTime = currentTime;
 
-    Serial.print("[");
-    Serial.print(millis());
-    Serial.print("] X: ");
-    Serial.print(event.acceleration.x);
-    Serial.print(", Y: ");
-    Serial.print(event.acceleration.y);
-    Serial.print(", Z: ");
-    Serial.print(event.acceleration.z);
-    Serial.println(" m/s^2");
-    Serial.println(sizeof(points) / sizeof(Point));
-
     for (int i = MAX_POINTS - 1; i >= 0; i--) {
       if (!points[i].active)
         continue;
