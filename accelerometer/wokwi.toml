@@ -1,4 +1,0 @@
-[wokwi]
-version = 1
-firmware = "../build/accelerometer.ino.hex"
-elf = "../build/accelerometer..ino.elf"

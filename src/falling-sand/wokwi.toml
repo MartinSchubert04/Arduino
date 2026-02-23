@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = "../../build/falling-sand.ino.hex"
+elf = "../../build/falling-sand.ino.elf"

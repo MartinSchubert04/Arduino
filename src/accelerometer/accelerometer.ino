@@ -1,3 +1,4 @@
+#include "RTClib.h"
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <MD_MAX72xx.h>
@@ -8,6 +9,7 @@ bool isInside(int x, int y);
 
 // hardware setup & const
 Adafruit_MPU6050 mpu;
+RTC_DS1307 rtc;
 
 #define CLK_PIN 13
 #define DATA_PIN 11
@@ -36,10 +38,19 @@ struct Point {
 
 Point points[64];
 
+char daysOfTheWeek[7][12] = {"Sunday",   "Monday", "Tuesday", "Wednesday",
+                             "Thursday", "Friday", "Saturday"};
+
 void setup(void) {
   Serial.begin(115200);
 
-  while (!mpu.begin()) {
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    Serial.flush();
+    abort();
+  }
+
+  while (!mpu.begin(0x69)) {
     Serial.println("MPU6050 not connected!");
     delay(1000);
   }
@@ -101,10 +112,30 @@ void loop() {
   if (currentTime - prevTime >= interval) {
     prevTime = currentTime;
 
-    Serial.print("[");
-    Serial.print(millis());
-    Serial.println("] X: ");
-    Serial.println(event.acceleration.x);
+    // Serial.print("[");
+    // Serial.print(millis());
+    // Serial.println("] X: ");
+    // Serial.println(event.acceleration.x);
+
+    DateTime now = rtc.now();
+
+    Serial.print("Current time: ");
+    Serial.print(now.year(), DEC);
+    Serial.print('/');
+    Serial.print(now.month(), DEC);
+    Serial.print('/');
+    Serial.print(now.day(), DEC);
+    Serial.print(" (");
+    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
+    Serial.print(") ");
+    Serial.print(now.hour(), DEC);
+    Serial.print(':');
+    Serial.print(now.minute(), DEC);
+    Serial.print(':');
+    Serial.print(now.second(), DEC);
+    Serial.println();
+
+    Serial.println();
 
     for (int i = MAX_POINTS - 1; i >= 0; i--) {
 

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 130, "rotate": 90, "attrs": {} },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels",
+      "top": 300,
+      "left": 200,
+      "rotate": 180,
+      "attrs": { "rows": "1", "cols": "1" }
+    },
+    {
+      "type": "wokwi-mpu6050",
+      "id": "mpu",
+      "top": 150,
+      "left": 24,
+      "rotate": 270,
+      "attrs": { "accelZ": "0" }
+    },
+    { "type": "wokwi-ssd1306", "id": "oled1", "top": 268, "left": 27, "attrs": {} },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 165,
+      "left": 110,
+      "rotate": 90,
+      "attrs": { "value": "10000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 165,
+      "left": 90,
+      "rotate": 90,
+      "attrs": { "value": "10000" }
+    }
+  ],
+  "connections": [
+    [ "uno:GND.2", "mpu:GND", "black", [ "h-164", "v0" ] ],
+    [ "uno:GND.2", "neopixels:VSS", "black", [ "h-17", "v129", "h0" ] ],
+    [ "uno:GND.2", "oled1:GND", "black", [ "h-17", "v129", "h0" ] ],
+    [ "uno:5V", "mpu:VCC", "red", [ "h-157", "v0" ] ],
+    [ "uno:5V", "r1:1", "red", [ "h0" ] ],
+    [ "uno:5V", "r2:1", "red", [ "h0" ] ],
+    [ "uno:5V", "oled1:VIN", "red", [ "h-24", "v132", "h0" ] ],
+    [ "uno:5V", "neopixels:VDD", "red", [ "h-24", "v132", "h0" ] ],
+    [ "uno:A5", "r2:2", "Gold", [ "h0" ] ],
+    [ "uno:A5", "oled1:CLK", "Gold", [ "h-59", "v23", "h0" ] ],
+    [ "uno:A5", "mpu:SCL", "Gold", [ "h-59", "v23", "h-98", "v0" ] ],
+    [ "uno:A4", "r1:2", "LimeGreen", [ "h0" ] ],
+    [ "uno:A4", "oled1:DATA", "LimeGreen", [ "h-39", "v39", "h0" ] ],
+    [ "uno:A4", "mpu:SDA", "LimeGreen", [ "h-39", "v39", "h-125", "v0" ] ],
+    [ "uno:6", "neopixels:DIN", "Indigo", [ "h18", "v81", "h0" ] ]
+  ]
+}

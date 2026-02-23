@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 29.4, "left": -58.2, "attrs": {} },
+    { "type": "wokwi-mpu6050", "id": "imu1", "top": 13.42, "left": -170.48, "attrs": {} },
+    {
+      "type": "wokwi-max7219-matrix",
+      "id": "matrix1",
+      "top": -105,
+      "left": -72.99,
+      "attrs": { "chain": "1" }
+    },
+    { "type": "wokwi-ds1307", "id": "rtc1", "top": 100.2, "left": 326.5, "attrs": {} }
+  ],
+  "connections": [
+    [ "imu1:SDA", "uno:A4", "green", [ "v345.6", "h278.48" ] ],
+    [ "uno:A5", "imu1:SCL", "red", [ "v38.3", "h-274.1" ] ],
+    [ "matrix1:GND", "uno:GND.1", "black", [ "h0" ] ],
+    [ "matrix1:V+", "uno:5V", "red", [ "h0" ] ],
+    [ "matrix1:CS", "uno:10", "green", [ "h0" ] ],
+    [ "matrix1:CLK", "uno:13", "gold", [ "h0" ] ],
+    [ "matrix1:DIN", "uno:11", "blue", [ "h0" ] ],
+    [ "uno:5V", "rtc1:5V", "red", [ "v0" ] ],
+    [ "uno:GND.2", "rtc1:GND", "black", [ "v0" ] ],
+    [ "uno:A4", "rtc1:SDA", "green", [ "v0" ] ],
+    [ "uno:A5", "rtc1:SCL", "gold", [ "v0" ] ],
+    [ "imu1:GND", "uno:GND.2", "black", [ "v144", "h278.48" ] ],
+    [ "imu1:VCC", "uno:5V", "red", [ "v182.4", "h240.08" ] ],
+    [ "imu1:AD0", "uno:3.3V", "violet", [ "v124.8", "h220.78" ] ]
+  ],
+  "dependencies": {}
+}
