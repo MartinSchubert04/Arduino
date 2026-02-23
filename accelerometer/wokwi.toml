@@ -1,4 +1,4 @@
 [wokwi]
 version = 1
-firmware = "../build/fluid.ino.hex"
-elf = "../build/fluid.ino.elf"
+firmware = "../build/accelerometer.ino.hex"
+elf = "../build/accelerometer..ino.elf"

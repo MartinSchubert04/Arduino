@@ -4,6 +4,7 @@
 #include <Wire.h>
 
 int findPoint(int x, int y);
+bool isInside(int x, int y);
 
 // hardware setup & const
 Adafruit_MPU6050 mpu;
@@ -71,7 +72,7 @@ sensors_event_t event;
 unsigned long prevTime = 0;
 const unsigned long interval = 100;
 
-Vec2 gravity2D = {0,0};
+Vec2 gravity2D = {0, 0};
 
 void loop() {
   unsigned long currentTime = millis();
@@ -91,59 +92,57 @@ void loop() {
   if (event.acceleration.y > 3) {
     gravity2D.x = 0;
     gravity2D.y = -1;
-  } else {
+  }
+  if (event.acceleration.y < -3) {
     gravity2D.x = 0;
     gravity2D.y = 1;
   }
-
 
   if (currentTime - prevTime >= interval) {
     prevTime = currentTime;
 
     Serial.print("[");
     Serial.print(millis());
-    Serial.print("] X: ");
-    Serial.print(event.acceleration.x);
-    
-    
+    Serial.println("] X: ");
+    Serial.println(event.acceleration.x);
 
     for (int i = MAX_POINTS - 1; i >= 0; i--) {
 
-      int newX = p.pos.x + gravityX;
-      int newY = p.pos.y + gravityY;
-
-      
       if (!points[i].active)
         continue;
 
       Point &p = points[i];
+      int nx = p.pos.x + gravity2D.x;
+      int ny = p.pos.y + gravity2D.y;
 
-      if (p.pos.y < MAX_Y && findPoint(p.pos.x, p.pos.y + gravityY) == -1) {
-        p.pos.y =+ gravity2D.y;
-        p.active = true;
-
+      if (findPoint(nx, ny) == -1 && isInside(nx, ny)) {
+        p.pos.x = nx;
+        p.pos.y = ny;
         continue;
       }
+
+      Vec2 perp;
+      perp.x = -gravity2D.y;
+      perp.y = gravity2D.x;
 
       int side = random(2);
 
-      // check right
-      if (side == 1 && p.pos.x < MAX_X && p.pos.y < MAX_Y &&
-        findPoint(p.pos.x + 1, p.pos.y + 1) == -1) {
-        p.pos.x++;
-        p.pos.y++;
-        p.active = true;
+      Vec2 slide;
 
-        continue;
+      if (side == 0) {
+        slide.x = gravity2D.x + perp.x;
+        slide.y = gravity2D.y + perp.y;
+      } else {
+        slide.x = gravity2D.x - perp.x;
+        slide.y = gravity2D.y - perp.y;
       }
 
-      // check left
-      if (side == 0 && p.pos.x > MIN_X && p.pos.y < MAX_Y &&
-          findPoint(p.pos.x - 1, p.pos.y + 1) == -1) {
-        p.pos.x--;
-        p.pos.y++;
-        p.active = true;
+      int sx = p.pos.x + slide.x;
+      int sy = p.pos.y + slide.y;
 
+      if (findPoint(sx, sy) == -1 && isInside(sx, sy)) {
+        p.pos.x = sx;
+        p.pos.y = sy;
         continue;
       }
     }
@@ -160,10 +159,15 @@ void loop() {
   }
 }
 
+bool isInside(int x, int y) {
+  if (x < MIN_X || x > MAX_X || y < MIN_Y || y > MAX_Y)
+    return false;
+
+  return true;
+}
+
 // find given pos of point or return -1
 int findPoint(int x, int y) {
-  if (x < MIN_X || x > MAX_X || y < MIN_Y || y > MAX_Y)
-    return -1;
 
   for (int i = 0; i < MAX_POINTS; i++) {
     if (points[i].active && points[i].pos.x == x && points[i].pos.y == y) {
