@@ -1,4 +1,3 @@
-#include "RTClib.h"
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <MD_MAX72xx.h>
@@ -9,7 +8,6 @@ bool isInside(int x, int y);
 
 // hardware setup & const
 Adafruit_MPU6050 mpu;
-RTC_DS1307 rtc;
 
 #define CLK_PIN 13
 #define DATA_PIN 11
@@ -43,12 +41,6 @@ char daysOfTheWeek[7][12] = {"Sunday",   "Monday", "Tuesday", "Wednesday",
 
 void setup(void) {
   Serial.begin(115200);
-
-  if (!rtc.begin()) {
-    Serial.println("Couldn't find RTC");
-    Serial.flush();
-    abort();
-  }
 
   while (!mpu.begin(0x69)) {
     Serial.println("MPU6050 not connected!");
@@ -117,24 +109,6 @@ void loop() {
     // Serial.println("] X: ");
     // Serial.println(event.acceleration.x);
 
-    DateTime now = rtc.now();
-
-    Serial.print("Current time: ");
-    Serial.print(now.year(), DEC);
-    Serial.print('/');
-    Serial.print(now.month(), DEC);
-    Serial.print('/');
-    Serial.print(now.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(now.hour(), DEC);
-    Serial.print(':');
-    Serial.print(now.minute(), DEC);
-    Serial.print(':');
-    Serial.print(now.second(), DEC);
-    Serial.println();
-
     Serial.println();
 
     for (int i = MAX_POINTS - 1; i >= 0; i--) {
@@ -147,6 +121,7 @@ void loop() {
       int ny = p.pos.y + gravity2D.y;
 
       if (findPoint(nx, ny) == -1 && isInside(nx, ny)) {
+        mx.setPoint(p.pos.y, p.pos.x, false);
         p.pos.x = nx;
         p.pos.y = ny;
         continue;
@@ -172,13 +147,13 @@ void loop() {
       int sy = p.pos.y + slide.y;
 
       if (findPoint(sx, sy) == -1 && isInside(sx, sy)) {
+        mx.setPoint(p.pos.y, p.pos.x, false);
+
         p.pos.x = sx;
         p.pos.y = sy;
         continue;
       }
     }
-
-    mx.clear();
 
     for (int i = 0; i < MAX_POINTS; i++) {
       if (points[i].active) {
