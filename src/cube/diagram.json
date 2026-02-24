@@ -3,40 +3,48 @@
   "author": "Anonymous maker",
   "editor": "wokwi",
   "parts": [
-    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 130, "rotate": 90, "attrs": {} },
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": 16.2,
+      "left": 126.2,
+      "rotate": 90,
+      "attrs": {}
+    },
     {
       "type": "wokwi-neopixel-canvas",
       "id": "neopixels",
-      "top": 300,
-      "left": 200,
+      "top": 268.8,
+      "left": 345.8,
       "rotate": 180,
       "attrs": { "rows": "1", "cols": "1" }
     },
     {
       "type": "wokwi-mpu6050",
       "id": "mpu",
-      "top": 150,
-      "left": 24,
+      "top": 12.58,
+      "left": 70.12,
       "rotate": 270,
       "attrs": { "accelZ": "0" }
     },
-    { "type": "wokwi-ssd1306", "id": "oled1", "top": 268, "left": 27, "attrs": {} },
+    { "type": "wokwi-ssd1306", "id": "oled1", "top": 285.1, "left": 184.3, "attrs": {} },
     {
       "type": "wokwi-resistor",
       "id": "r1",
-      "top": 165,
-      "left": 110,
+      "top": 168,
+      "left": 85.85,
       "rotate": 90,
       "attrs": { "value": "10000" }
     },
     {
       "type": "wokwi-resistor",
       "id": "r2",
-      "top": 165,
-      "left": 90,
+      "top": 168,
+      "left": 47.45,
       "rotate": 90,
       "attrs": { "value": "10000" }
-    }
+    },
+    { "type": "wokwi-analog-joystick", "id": "joystick1", "top": -10.2, "left": 399, "attrs": {} }
   ],
   "connections": [
     [ "uno:GND.2", "mpu:GND", "black", [ "h-164", "v0" ] ],
@@ -53,6 +61,13 @@
     [ "uno:A4", "r1:2", "LimeGreen", [ "h0" ] ],
     [ "uno:A4", "oled1:DATA", "LimeGreen", [ "h-39", "v39", "h0" ] ],
     [ "uno:A4", "mpu:SDA", "LimeGreen", [ "h-39", "v39", "h-125", "v0" ] ],
-    [ "uno:6", "neopixels:DIN", "Indigo", [ "h18", "v81", "h0" ] ]
-  ]
+    [ "uno:6", "neopixels:DIN", "Indigo", [ "h18", "v81", "h0" ] ],
+    [ "joystick1:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "joystick1:VERT", "uno:A0", "blue", [ "v0" ] ],
+    [ "joystick1:HORZ", "uno:A1", "gold", [ "v0" ] ],
+    [ "joystick1:SEL", "uno:2", "green", [ "v0" ] ],
+    [ "joystick1:GND", "uno:GND.2", "black", [ "v0" ] ],
+    [ "mpu:AD0", "uno:3.3V", "blue", [ "h-28.8", "v48.02" ] ]
+  ],
+  "dependencies": {}
 }

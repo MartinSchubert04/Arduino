@@ -30,6 +30,7 @@
 //
 
 #include <Adafruit_GFX.h>
+#include <Adafruit_MPU6050.h>
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
@@ -38,9 +39,17 @@ Adafruit_SSD1306 display(128, 64); // 128 pixels width, 64 pixels height
 
 #define LED_PIN 6
 #define LED_COUNT 1
+#define VERT_PIN A0
+#define HORZ_PIN A1
+#define SEL_PIN 2
+
 Adafruit_NeoPixel neoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-const int mpuAddress = 0x68; // I2C address of the MPU-6050
+const int mpuAddress = 0x69; // I2C address of the MPU-6050
+
+Adafruit_MPU6050 mpu;
+
+sensors_event_t a, g, temp;
 
 float xByGyro, yByGyro, zByGyro; // Global variables for the rotation by gyro
 
@@ -66,15 +75,21 @@ int wireframe[NUM_VERTICES][2];
 void setup() {
   Serial.begin(115200);
 
-  Wire.begin();
-
   // Initialize the OLED display and test if it is connected.
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
     for (;;)
       ; // halt the sketch if error encountered
   }
-
+  /*
+    if (!mpu.begin(mpuAddress)) {
+      Serial.println("Failed to find MPU6050 chip");
+      while (1) {
+        delay(10);
+      }
+    }
+    Serial.println("MPU6050 Found!");
+  */
   // Initialize the MPU-6050 and test if it is connected.
   Wire.beginTransmission(mpuAddress);
   Wire.write(0x6B); // PWR_MGMT_1 register
@@ -88,9 +103,31 @@ void setup() {
 
   // Initialize the NeoPixel
   neoPixel.begin();
+
+  pinMode(VERT_PIN, INPUT);
+  pinMode(HORZ_PIN, INPUT);
+  pinMode(SEL_PIN, INPUT_PULLUP);
 }
 
 void loop() {
+  int vert = analogRead(VERT_PIN);
+  int horz = analogRead(HORZ_PIN);
+  bool selPressed = digitalRead(SEL_PIN) == LOW;
+
+  /*
+    mpu.getEvent(&a, &g, &temp);
+
+    int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
+
+    AcX = a.acceleration.x;
+    AcY = a.acceleration.y;
+    AcZ = a.acceleration.z;
+    Tmp = temp.temperature;
+    GyX = g.gyro.x;
+    GyY = g.gyro.y;
+    GyZ = g.gyro.z;
+  */
+
   Wire.beginTransmission(mpuAddress);
   Wire.write(0x3B);            // Starting with register 0x3B (ACCEL_XOUT_H)
   Wire.endTransmission(false); // No stop condition for a repeated start
@@ -135,8 +172,8 @@ void loop() {
   yByGyro += (float)GyY * 0.00001;
   zByGyro += (float)GyZ * 0.00001;
 
-  float x = xByAccel + xByGyro; // combine both angles
-  float y = yByAccel + yByGyro;
+  float x = xByAccel + xByGyro + ((horz - 1023) / 1023); // combine both angles
+  float y = yByAccel + yByGyro + ((vert - 1023) / 1023);
   float z = zByAccel + zByGyro;
 
   // Keep the radians in range (although the cos/sin functions accept every
