@@ -176,6 +176,13 @@ void loop() {
   float y = yByAccel + yByGyro + ((vert - 1023) / 1023);
   float z = zByAccel + zByGyro;
 
+  float firstX, firstY, firstZ;
+  if (isFirstLoop) {
+    firstX = x;
+    firstY = y;
+    firstZ = z;
+  }
+
   // Keep the radians in range (although the cos/sin functions accept every
   // value)
   if (x < 0.0)
